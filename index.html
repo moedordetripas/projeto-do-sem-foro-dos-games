@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Semáforo Inclusivo</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Semáforo</h1>
+
+        <canvas id="semaforo" width="300" height="600"></canvas>
+
+        <h2 id="sinal">SINAL VERDE</h2>
+
+        <div id="timer">10</div>
+
+        <p id="mensagem">Pode atravessar.</p>
+
+        <button id="tempoExtra">
+            Solicitar mais tempo
+        </button>
+
+        <button id="contraste">
+            Ativar alto contraste
+        </button>
+
+        <button id="audio">
+            Ativar áudio
+        </button>
+
+    </div>
+
+
+    <script>
+
+        // =========================================
+        // PEGAR O CANVAS
+        // =========================================
+
+        const canvas = document.getElementById("semaforo");
+        const ctx = canvas.getContext("2d");
+
+
+        // =========================================
+        // ELEMENTOS DA PÁGINA
+        // =========================================
+
+        const sinal = document.getElementById("sinal");
+        const timer = document.getElementById("timer");
+        const mensagem = document.getElementById("mensagem");
+
+        const tempoExtra = document.getElementById("tempoExtra");
+        const contraste = document.getElementById("contraste");
+        const audio = document.getElementById("audio");
+
+
+        // =========================================
+        // VARIÁVEIS
+        // =========================================
+
+        let corAtual = "verde";
+        let tempo = 10;
+        let audioLigado = false;
+        let pedidoExtra = false;
+
+
+        // =========================================
+        // DESENHAR SEMÁFORO
+        // =========================================
+
+        function desenharSemaforo() {
+
+            // Apagar o canvas
+            ctx.clearRect(0, 0, 300, 600);
+
+
+            // Fundo
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, 300, 600);
+
+
+            // =====================================
+            // POSTE
+            // =====================================
+
+            ctx.fillStyle = "#222222";
+
+            ctx.fillRect(
+                135,
+                430,
+                30,
+                170
+            );
+
+
+            // =====================================
+            // CORPO DO SEMÁFORO
+            // =====================================
+
+            ctx.fillStyle = "#444444";
+
+            ctx.fillRect(
+                55,
+                30,
+                190,
+                400
+            );
+
+
+            // =====================================
+            // LUZ VERDE
+            // =====================================
+
+            desenharLuz(
+                150,
+                110,
+                "verde"
+            );
+
+
+            // =====================================
+            // LUZ AMARELA
+            // =====================================
+
+            desenharLuz(
+                150,
+                225,
+                "amarelo"
+            );
+
+
+            // =====================================
+            // LUZ VERMELHA
+            // =====================================
+
+            desenharLuz(
+                150,
+                340,
+                "vermelho"
+            );
+
+
+            // =====================================
+            // SÍMBOLO TRIÂNGULO
+            // =====================================
+
+            ctx.beginPath();
+
+            ctx.moveTo(150, 70);
+            ctx.lineTo(120, 125);
+            ctx.lineTo(180, 125);
+
+            ctx.closePath();
+
+            ctx.fillStyle = "#d9ffd9";
+            ctx.fill();
+
+            ctx.strokeStyle = "#39c94b";
+            ctx.lineWidth = 6;
+            ctx.stroke();
+
+
+            // =====================================
+            // SÍMBOLO QUADRADO
+            // =====================================
+
+            ctx.fillStyle = "#ffe477";
+
+            ctx.fillRect(
+                120,
+                195,
+                60,
+                60
+            );
+
+            ctx.strokeStyle = "#ff9f1c";
+            ctx.lineWidth = 6;
+
+            ctx.strokeRect(
+                120,
+                195,
+                60,
+                60
+            );
+
+
+            // =====================================
+            // SÍMBOLO X
+            // =====================================
+
+            ctx.beginPath();
+
+            ctx.moveTo(120, 300);
+            ctx.lineTo(180, 360);
+
+            ctx.moveTo(180, 300);
+            ctx.lineTo(120, 360);
+
+            ctx.strokeStyle = "#ff3030";
+            ctx.lineWidth = 12;
+
+            ctx.stroke();
+
+
+            // =====================================
+            // CAIXA LATERAL DA IMAGEM
+            // =====================================
+
+            ctx.fillStyle = "#444444";
+
+            ctx.fillRect(
+                60,
+                440,
+                70,
+                110
+            );
+
+
+            // Luz lateral
+            ctx.beginPath();
+
+            ctx.arc(
+                95,
+                495,
+                24,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                corAtual === "vermelho"
+                    ? "#ff3030"
+                    : "#661111";
+
+            ctx.fill();
+
+        }
+
+
+        // =========================================
+        // DESENHAR LUZ
+        // =========================================
+
+        function desenharLuz(x, y, nome) {
+
+            let cor;
+
+
+            if (nome === "verde") {
+
+                cor =
+                    corAtual === "verde"
+                        ? "#00ff00"
+                        : "#194519";
+
+            }
+
+
+            if (nome === "amarelo") {
+
+                cor =
+                    corAtual === "amarelo"
+                        ? "#ffff00"
+                        : "#575000";
+
+            }
+
+
+            if (nome === "vermelho") {
+
+                cor =
+                    corAtual === "vermelho"
+                        ? "#ff0000"
+                        : "#5a1111";
+
+            }
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                43,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle = cor;
+
+            ctx.fill();
+
+            ctx.strokeStyle = "#111111";
+            ctx.lineWidth = 4;
+
+            ctx.stroke();
+
+        }
+
+
+        // =========================================
+        // ATUALIZAR TEXTO
+        // =========================================
+
+        function atualizar() {
+
+            timer.textContent = tempo;
+
+
+            if (corAtual === "verde") {
+
+                sinal.textContent =
+                    "SINAL VERDE";
+
+                mensagem.textContent =
+                    "Pode atravessar.";
+
+            }
+
+
+            if (corAtual === "amarelo") {
+
+                sinal.textContent =
+                    "SINAL AMARELO";
+
+                mensagem.textContent =
+                    "Atenção!";
+
+            }
+
+
+            if (corAtual === "vermelho") {
+
+                sinal.textContent =
+                    "SINAL VERMELHO";
+
+                mensagem.textContent =
+                    "Pare e aguarde.";
+
+            }
+
+
+            desenharSemaforo();
+
+        }
+
+
+        // =========================================
+        // MUDAR COR
+        // =========================================
+
+        function mudarCor() {
+
+            if (corAtual === "verde") {
+
+                corAtual = "amarelo";
+
+                tempo = 3;
+
+            }
+
+            else if (corAtual === "amarelo") {
+
+                corAtual = "vermelho";
+
+                tempo = 8;
+
+            }
+
+            else {
+
+                corAtual = "verde";
+
+                tempo =
+                    pedidoExtra
+                        ? 15
+                        : 10;
+
+                pedidoExtra = false;
+
+            }
+
+
+            atualizar();
+
+            falar();
+
+        }
+
+
+        // =========================================
+        // TIMER AUTOMÁTICO
+        // =========================================
+
+        setInterval(function() {
+
+            tempo--;
+
+            if (tempo <= 0) {
+
+                mudarCor();
+
+            }
+
+            atualizar();
+
+        }, 1000);
+
+
+        // =========================================
+        // BOTÃO MAIS TEMPO
+        // =========================================
+
+        tempoExtra.onclick = function() {
+
+            if (corAtual === "verde") {
+
+                tempo += 5;
+
+                mensagem.textContent =
+                    "Mais 5 segundos foram adicionados.";
+
+            }
+
+            else {
+
+                pedidoExtra = true;
+
+                mensagem.textContent =
+                    "Pedido registrado para o próximo verde.";
+
+            }
+
+            atualizar();
+
+        };
+
+
+        // =========================================
+        // ALTO CONTRASTE
+        // =========================================
+
+        contraste.onclick = function() {
+
+            document.body.classList.toggle(
+                "alto-contraste"
+            );
+
+
+            if (
+                document.body.classList.contains(
+                    "alto-contraste"
+                )
+            ) {
+
+                contraste.textContent =
+                    "Desativar alto contraste";
+
+            }
+
+            else {
+
+                contraste.textContent =
+                    "Ativar alto contraste";
+
+            }
+
+        };
+
+
+        // =========================================
+        // ÁUDIO
+        // =========================================
+
+        audio.onclick = function() {
+
+            audioLigado = !audioLigado;
+
+
+            if (audioLigado) {
+
+                audio.textContent =
+                    "Desativar áudio";
+
+                falar();
+
+            }
+
+            else {
+
+                audio.textContent =
+                    "Ativar áudio";
+
+                window.speechSynthesis.cancel();
+
+            }
+
+        };
+
+
+        // =========================================
+        // FALAR
+        // =========================================
+
+        function falar() {
+
+            if (!audioLigado) {
+                return;
+            }
+
+
+            let texto;
+
+
+            if (corAtual === "verde") {
+
+                texto =
+                    "Sinal verde. Pode atravessar.";
+
+            }
+
+
+            else if (corAtual === "amarelo") {
+
+                texto =
+                    "Sinal amarelo. Atenção.";
+
+            }
+
+
+            else {
+
+                texto =
+                    "Sinal vermelho. Pare e aguarde.";
+
+            }
+
+
+            const voz =
+                new SpeechSynthesisUtterance(texto);
+
+            voz.lang = "pt-BR";
+
+            window.speechSynthesis.cancel();
+
+            window.speechSynthesis.speak(voz);
+
+        }
+
+
+        // =========================================
+        // INICIAR
+        // =========================================
+
+        desenharSemaforo();
+        atualizar();
+
+    </script>
+
+</body>
+
+</html>

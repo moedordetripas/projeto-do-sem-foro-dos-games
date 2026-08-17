@@ -1,0 +1,121 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+
+    background-color: #eeeeee;
+
+    font-family: Arial, sans-serif;
+
+    text-align: center;
+
+    color: #222222;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+
+    margin: auto;
+
+    padding: 20px;
+
+    background-color: white;
+
+    border-radius: 15px;
+}
+
+h1 {
+    font-size: 50px;
+
+    margin: 10px;
+}
+
+canvas {
+    display: block;
+
+    width: 300px;
+    height: 600px;
+
+    margin: 20px auto;
+
+    background-color: white;
+
+    border: 3px solid black;
+}
+
+#sinal {
+    font-size: 28px;
+
+    font-weight: bold;
+}
+
+#timer {
+    font-size: 60px;
+
+    font-weight: bold;
+}
+
+#mensagem {
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+button {
+    display: block;
+
+    width: 100%;
+
+    max-width: 400px;
+
+    margin: 10px auto;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background-color: #333333;
+
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* ALTO CONTRASTE */
+
+body.alto-contraste {
+    background-color: black;
+
+    color: white;
+}
+
+body.alto-contraste .container {
+    background-color: black;
+
+    border: 3px solid white;
+}
+
+body.alto-contraste canvas {
+    background-color: black;
+
+    border-color: white;
+}
+
+body.alto-contraste button {
+    background-color: black;
+
+    color: white;
+
+    border: 2px solid white;
+}
